@@ -287,14 +287,16 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Test Type:</label>
-                    <select name="testType" required>
-                        <option value="moisture">Moisture Content</option>
-                        <option value="pesticide">Pesticide Residue</option>
-                        <option value="microbial">Microbial Testing</option>
-                        <option value="heavy-metals">Heavy Metals</option>
-                        <option value="dna">DNA Barcoding</option>
-                    </select>
+                     <label for="testType">Test Type:</label>
+    
+    <select name="testType" id="testType" required>
+        <option value="" disabled selected>Select a test type...</option>
+        <option value="moisture">Moisture Content</option>
+        <option value="pesticide">Pesticide Residue</option>
+        <option value="microbial">Microbial Testing</option>
+        <option value="heavy-metals">Heavy Metals</option>
+        <option value="dna">DNA Barcoding</option>
+    </select>
                 </div>
                 
                 <div class="form-group">
@@ -346,13 +348,15 @@
                 </div>
                 
                 <div class="form-group">
-                    <label>Process Type:</label>
-                    <select name="processType" required>
-                        <option value="drying">Drying</option>
-                        <option value="grinding">Grinding</option>
-                        <option value="extraction">Extraction</option>
-                        <option value="packaging">Packaging</option>
-                    </select>
+                  <label for="processType">Process Type:</label>
+
+<select name="processType" id="processType" required>
+    <option value="" disabled selected>Select a process...</option>
+    <option value="drying">Drying</option>
+    <option value="grinding">Grinding</option>
+    <option value="extraction">Extraction</option>
+    <option value="packaging">Packaging</option>
+</select>
                 </div>
                 
                 <div class="form-group">
