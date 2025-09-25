@@ -2,6 +2,9 @@
 
 A blockchain-based traceability system for Ayurvedic herbs that tracks the complete journey from geo-tagged harvest locations to final products with QR code verification.
 
+# 🌐 Prototype Live Link :
+https://sih-veda-frontend.onrender.com
+
 ## 🚀 Features
 
 ### Core Functionality
