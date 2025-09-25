@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -208,7 +209,7 @@ app.post('/api/product', async (req, res) => {
         const qrData = {
             productId: productId,
             qrCode: qrCodeId,
-            verificationUrl: `https://vedasqad-backend.onrender.com/verify.html?qr=${qrCodeId}`
+            verificationUrl: `https://sih-veda-frontend.onrender.com/verify.html?qr=${qrCodeId}`
         };
         
         const qrCodeImage = await QRCode.toDataURL(JSON.stringify(qrData));
@@ -374,6 +375,6 @@ app.get('/api/blockchain/health', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Server running on https://vedasqad-backend.onrender.com`);
+    console.log(`Server running on ${PORT}`);
     console.log(`Blockchain initialized with genesis block`);
 });
