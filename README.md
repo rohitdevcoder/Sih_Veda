@@ -1,4 +1,4 @@
-# 🌿 Ayurvedic Herb Traceability System - MVP
+# 🌿 Ayurvedic Herb Traceability System
 
 A blockchain-based traceability system for Ayurvedic herbs that tracks the complete journey from geo-tagged harvest locations to final products with QR code verification.
 
@@ -29,22 +29,17 @@ https://sih-veda-frontend.onrender.com
 
 ## 🛠️ Installation
 
-1. Navigate to the project directory:
-```bash
-cd ayurvedic-traceability-mvp
-```
-
-2. Install dependencies (already done):
+1. Install dependencies (already done):
 ```bash
 npm install
 ```
 
-3. Start the server:
+2. Start the server:
 ```bash
 npm start
 ```
 
-4. Open your browser and navigate to:
+3. Open your browser and navigate to:
 ```
 http://localhost:3000
 ```
@@ -147,17 +142,6 @@ http://localhost:3000
 - **Temperature Limits**: Drying temperature < 60°C
 - **Sustainability Scoring**: Based on quantity, organic, and fair trade
 
-### API Endpoints
-
-- `GET /api/users` - List all stakeholders
-- `POST /api/collection` - Record harvest event
-- `POST /api/quality-test` - Record lab test
-- `POST /api/processing` - Record processing step
-- `POST /api/product` - Create final product with QR
-- `GET /api/provenance/:qrCode` - Get complete product journey
-- `GET /api/batch/:batchId` - Get batch history
-- `GET /api/blockchain/health` - Check blockchain status
-
 ## 📊 Database Schema
 
 - **blockchain**: Stores mined blocks
@@ -204,6 +188,8 @@ This is an MVP demonstration. For production deployment considerations, please c
 
 MIT License - This is an educational prototype.
 
----
+---  
 
 **Note**: This MVP demonstrates the core concepts of blockchain-based traceability for Ayurvedic herbs. It uses a simplified blockchain implementation for demonstration purposes. For production use, implement with enterprise blockchain platforms like Hyperledger Fabric or Corda.
+
+
