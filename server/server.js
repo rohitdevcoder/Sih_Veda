@@ -208,7 +208,7 @@ app.post('/api/product', async (req, res) => {
         const qrData = {
             productId: productId,
             qrCode: qrCodeId,
-            verificationUrl: `http://localhost:${PORT}/verify.html?qr=${qrCodeId}`
+            verificationUrl: `https://vedasqad-backend.onrender.com/verify.html?qr=${qrCodeId}`
         };
         
         const qrCodeImage = await QRCode.toDataURL(JSON.stringify(qrData));
@@ -374,6 +374,6 @@ app.get('/api/blockchain/health', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on https://vedasqad-backend.onrender.com`);
     console.log(`Blockchain initialized with genesis block`);
 });
