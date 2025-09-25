@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayurvedic Herb Traceability System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .card-description {
+            color: #666;
+            font-size: 14px;
+        }
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .gps-button {
+            background: #4CAF50;
+            margin-bottom: 20px;
+        }
+        .success-message {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .back-button {
+            background: #666;
+            margin-bottom: 20px;
+        }
+        .result-display {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        .qr-code-display {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .qr-code-display img {
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌿 Ayurvedic Herb Traceability System</h1>
+            <div class="subtitle">Blockchain-powered supply chain transparency from farm to formulation</div>
+        </header>
+
+        <div id="dashboard" class="dashboard">
+            <div class="card" onclick="showSection('collection')">
+                <div class="card-icon">🌱</div>
+                <div class="card-title">Record Collection</div>
+                <div class="card-description">Log harvest events with GPS location</div>
+            </div>
+            <div class="card" onclick="showSection('quality')">
+                <div class="card-icon">🔬</div>
+                <div class="card-title">Quality Testing</div>
+                <div class="card-description">Record lab test results</div>
+            </div>
+            <div class="card" onclick="showSection('processing')">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">Processing Step</div>
+                <div class="card-description">Document processing activities</div>
+            </div>
+            <div class="card" onclick="showSection('product')">
+                <div class="card-icon">📦</div>
+                <div class="card-title">Create Product</div>
+                <div class="card-description">Generate final product with QR code</div>
+            </div>
+            <div class="card" onclick="window.location.href='verify-new.html'">
+                <div class="card-icon">🔍</div>
+                <div class="card-title">Verify Product</div>
+                <div class="card-description">Scan QR code to view provenance</div>
+            </div>
+            <div class="card" onclick="checkBlockchainHealth()">
+                <div class="card-icon">⛓️</div>
+                <div class="card-title">Blockchain Status</div>
+                <div class="card-description">Check system health</div>
+            </div>
+        </div>
+
+        <!-- Collection Form -->
+        <div id="collection-form" class="form-section">
+            <button class="back-button" onclick="showDashboard()">← Back to Dashboard</button>
+            <h2>Record Herb Collection Event</h2>
+            
+            <button class="gps-button" onclick="getLocation()">📍 Get GPS Location</button>
+            
+            <form id="collectionForm">
+                <div class="form-group">
+                    <label>Collector ID:</label>
+                    <select name="collectorId" required>
+                        <option value="FARMER001">Ramesh Kumar (FARMER001)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Species:</label>
+                    <input type="text" name="species" placeholder="e.g., Withania somnifera (Ashwagandha)" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Quantity (kg):</label>
+                    <input type="number" name="quantity" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Latitude:</label>
+                    <input type="text" name="latitude" id="latitude" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Longitude:</label>
+                    <input type="text" name="longitude" id="longitude" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Address/Location:</label>
+                    <input type="text" name="address" placeholder="Village/Farm name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Harvest Method:</label>
+                    <select name="harvestMethod" required>
+                        <option value="manual">Manual Harvesting</option>
+                        <option value="sustainable">Sustainable Collection</option>
+                        <option value="wild">Wild Collection</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <label>
+                            <input type="checkbox" name="organic">
+                            Certified Organic
+                        </label>
+                        <label>
+                            <input type="checkbox" name="fairTrade">
+                            Fair Trade
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit">Submit Collection Record</button>
+            </form>
+            
+            <div class="success-message" id="collection-success"></div>
+            <div class="error-message" id="collection-error"></div>
+        </div>
+
+        <!-- Quality Test Form -->
+        <div id="quality-form" class="form-section">
+            <button class="back-button" onclick="showDashboard()">← Back to Dashboard</button>
+            <h2>Record Quality Test</h2>
+            
+            <form id="qualityForm">
+                <div class="form-group">
+                    <label>Batch ID:</label>
+                    <input type="text" name="batchId" placeholder="Enter batch ID from collection" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Laboratory:</label>
+                    <select name="labId" required>
+                        <option value="LAB001">AyurTest Labs (LAB001)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Test Type:</label>
+                    <select name="testType" required>
+                        <option value="moisture">Moisture Content</option>
+                        <option value="pesticide">Pesticide Residue</option>
+                        <option value="microbial">Microbial Testing</option>
+                        <option value="heavy-metals">Heavy Metals</option>
+                        <option value="dna">DNA Barcoding</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Test Value:</label>
+                    <input type="number" name="value" step="0.001" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Unit:</label>
+                    <input type="text" name="unit" placeholder="e.g., %, ppm, mg/kg" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Certificate Number:</label>
+                    <input type="text" name="certificate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Test Result:</label>
+                    <select name="passed" required>
+                        <option value="true">Passed</option>
+                        <option value="false">Failed</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Submit Test Result</button>
+            </form>
+            
+            <div class="success-message" id="quality-success"></div>
+            <div class="error-message" id="quality-error"></div>
+        </div>
+
+        <!-- Processing Form -->
+        <div id="processing-form" class="form-section">
+            <button class="back-button" onclick="showDashboard()">← Back to Dashboard</button>
+            <h2>Record Processing Step</h2>
+            
+            <form id="processingForm">
+                <div class="form-group">
+                    <label>Batch ID:</label>
+                    <input type="text" name="batchId" placeholder="Enter batch ID" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Processing Facility:</label>
+                    <select name="facilityId" required>
+                        <option value="PROC001">Herbal Processing Unit (PROC001)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Process Type:</label>
+                    <select name="processType" required>
+                        <option value="drying">Drying</option>
+                        <option value="grinding">Grinding</option>
+                        <option value="extraction">Extraction</option>
+                        <option value="packaging">Packaging</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Temperature (°C):</label>
+                    <input type="number" name="temperature" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label>Duration (hours):</label>
+                    <input type="number" name="duration" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label>Output Quantity (kg):</label>
+                    <input type="number" name="outputQuantity" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Notes:</label>
+                    <textarea name="notes" rows="3"></textarea>
+                </div>
+                
+                <button type="submit">Submit Processing Record</button>
+            </form>
+            
+            <div class="success-message" id="processing-success"></div>
+            <div class="error-message" id="processing-error"></div>
+        </div>
+
+        <!-- Product Creation Form -->
+        <div id="product-form" class="form-section">
+            <button class="back-button" onclick="showDashboard()">← Back to Dashboard</button>
+            <h2>Create Final Product</h2>
+            
+            <form id="productForm">
+                <div class="form-group">
+                    <label>Product Name:</label>
+                    <input type="text" name="name" placeholder="e.g., Ashwagandha Churna 100g" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Manufacturer:</label>
+                    <select name="manufacturerId" required>
+                        <option value="MFG001">Ayur Formulations Pvt Ltd (MFG001)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Main Ingredient Batch ID:</label>
+                    <input type="text" name="batchId" placeholder="Enter processed batch ID" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Manufacturing Date:</label>
+                    <input type="date" name="manufacturingDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Expiry Date:</label>
+                    <input type="date" name="expiryDate" required>
+                </div>
+                
+                <button type="submit">Create Product & Generate QR Code</button>
+            </form>
+            
+            <div class="success-message" id="product-success"></div>
+            <div class="error-message" id="product-error"></div>
+            <div class="qr-code-display" id="qr-display"></div>
+        </div>
+
+        <div class="result-display" id="result-display"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        function showSection(section) {
+            document.getElementById('dashboard').style.display = 'none';
+            document.querySelectorAll('.form-section').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(section + '-form').classList.add('active');
+        }
+
+        function showDashboard() {
+            document.getElementById('dashboard').style.display = 'grid';
+            document.querySelectorAll('.form-section').forEach(form => {
+                form.classList.remove('active');
+            });
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude;
+                        document.getElementById('longitude').value = position.coords.longitude;
+                        alert('GPS location captured successfully!');
+                    },
+                    (error) => {
+                        // Use demo coordinates for testing (Dehradun, Uttarakhand)
+                        document.getElementById('latitude').value = '30.3165';
+                        document.getElementById('longitude').value = '78.0322';
+                        alert('Using demo coordinates for testing');
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        // Collection Form Submit
+        document.getElementById('collectionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                collectorId: formData.get('collectorId'),
+                species: formData.get('species'),
+                quantity: parseFloat(formData.get('quantity')),
+                latitude: formData.get('latitude'),
+                longitude: formData.get('longitude'),
+                address: formData.get('address'),
+                harvestMethod: formData.get('harvestMethod'),
+                organic: formData.get('organic') === 'on',
+                fairTrade: formData.get('fairTrade') === 'on'
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/collection`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('collection-success').textContent = 
+                        `Success! Batch ID: ${result.batchId} | Sustainability Score: ${result.sustainabilityScore}/100`;
+                    document.getElementById('collection-success').style.display = 'block';
+                    document.getElementById('collection-error').style.display = 'none';
+                    e.target.reset();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                document.getElementById('collection-error').textContent = `Error: ${error.message}`;
+                document.getElementById('collection-error').style.display = 'block';
+                document.getElementById('collection-success').style.display = 'none';
+            }
+        });
+
+        // Quality Test Form Submit
+        document.getElementById('qualityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                batchId: formData.get('batchId'),
+                labId: formData.get('labId'),
+                testType: formData.get('testType'),
+                results: {
+                    value: parseFloat(formData.get('value')),
+                    unit: formData.get('unit')
+                },
+                certificate: formData.get('certificate'),
+                passed: formData.get('passed') === 'true'
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/quality-test`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('quality-success').textContent = 
+                        `Success! Test ID: ${result.testId}`;
+                    document.getElementById('quality-success').style.display = 'block';
+                    document.getElementById('quality-error').style.display = 'none';
+                    e.target.reset();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                document.getElementById('quality-error').textContent = `Error: ${error.message}`;
+                document.getElementById('quality-error').style.display = 'block';
+                document.getElementById('quality-success').style.display = 'none';
+            }
+        });
+
+        // Processing Form Submit
+        document.getElementById('processingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                batchId: formData.get('batchId'),
+                facilityId: formData.get('facilityId'),
+                processType: formData.get('processType'),
+                temperature: formData.get('temperature') ? parseFloat(formData.get('temperature')) : null,
+                duration: formData.get('duration') ? parseFloat(formData.get('duration')) : null,
+                outputQuantity: parseFloat(formData.get('outputQuantity')),
+                notes: formData.get('notes')
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/processing`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('processing-success').textContent = 
+                        `Success! Processing ID: ${result.processingId}`;
+                    document.getElementById('processing-success').style.display = 'block';
+                    document.getElementById('processing-error').style.display = 'none';
+                    e.target.reset();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                document.getElementById('processing-error').textContent = `Error: ${error.message}`;
+                document.getElementById('processing-error').style.display = 'block';
+                document.getElementById('processing-success').style.display = 'none';
+            }
+        });
+
+        // Product Form Submit
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                name: formData.get('name'),
+                manufacturerId: formData.get('manufacturerId'),
+                ingredients: [{
+                    name: 'Ashwagandha',
+                    sourceBatchId: formData.get('batchId'),
+                    percentage: 100
+                }],
+                manufacturingDate: formData.get('manufacturingDate'),
+                expiryDate: formData.get('expiryDate')
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/product`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('product-success').textContent = 
+                        `Success! Product ID: ${result.productId} | QR Code: ${result.qrCode}`;
+                    document.getElementById('product-success').style.display = 'block';
+                    document.getElementById('product-error').style.display = 'none';
+                    
+                    // Display QR code
+                    document.getElementById('qr-display').innerHTML = 
+                        `<h3>QR Code Generated</h3>
+                         <img src="${result.qrCodeImage}" alt="QR Code">
+                         <p>QR Code ID: ${result.qrCode}</p>`;
+                    document.getElementById('qr-display').style.display = 'block';
+                    
+                    e.target.reset();
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                document.getElementById('product-error').textContent = `Error: ${error.message}`;
+                document.getElementById('product-error').style.display = 'block';
+                document.getElementById('product-success').style.display = 'none';
+            }
+        });
+
+        async function checkBlockchainHealth() {
+            try {
+                const response = await fetch(`${API_URL}/blockchain/health`);
+                const health = await response.json();
+                
+                document.getElementById('result-display').innerHTML = `
+                    <h3>Blockchain Status</h3>
+                    <p><strong>Chain Valid:</strong> ${health.isValid ? '✅ Yes' : '❌ No'}</p>
+                    <p><strong>Chain Length:</strong> ${health.chainLength} blocks</p>
+                    <p><strong>Pending Transactions:</strong> ${health.pendingTransactions}</p>
+                    <p><strong>Latest Block Hash:</strong> ${health.latestBlock.hash.substring(0, 20)}...</p>
+                    <p><strong>Latest Block Time:</strong> ${new Date(health.latestBlock.timestamp).toLocaleString()}</p>
+                `;
+                document.getElementById('result-display').style.display = 'block';
+            } catch (error) {
+                alert('Error checking blockchain health: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

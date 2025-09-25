@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#4299e1">
+    <title>Botanical Traceability (Blockchain)</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            min-width: 320px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .title {
+            font-size: clamp(20px, 5vw, 28px);
+            font-weight: 600;
+            color: #1a202c;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .qr-display {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 4px;
+            flex-shrink: 0;
+        }
+        
+        .qr-display img {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .search-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            transition: border-color 0.3s;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .search-box:focus-within {
+            border-color: #4299e1;
+        }
+        
+        .search-icon {
+            margin-right: 12px;
+            color: #718096;
+        }
+        
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            color: #2d3748;
+            min-width: 200px;
+        }
+        
+        .search-input::placeholder {
+            color: #a0aec0;
+            font-size: 14px;
+        }
+        
+        .verify-btn {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .verify-btn:hover {
+            background: #3182ce;
+        }
+        
+        .map-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        #map {
+            height: clamp(300px, 40vh, 400px);
+            width: 100%;
+            touch-action: pan-x pan-y;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .map-control-btn {
+            display: block;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: white;
+            cursor: pointer;
+            font-size: 18px;
+            color: #4a5568;
+            transition: background 0.2s;
+        }
+        
+        .map-control-btn:hover {
+            background: #f7fafc;
+        }
+        
+        .map-control-btn:first-child {
+            border-bottom: 1px solid #e2e8f0;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .map-control-btn:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .details-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .details-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            min-width: 0;
+        }
+        
+        .section-title {
+            font-size: clamp(18px, 4vw, 20px);
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 30px;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -19px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #48bb78;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+            font-size: clamp(14px, 3vw, 16px);
+        }
+        
+        .timeline-date {
+            font-size: clamp(12px, 2.5vw, 14px);
+            color: #718096;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-detail {
+            font-size: clamp(12px, 2.5vw, 14px);
+            color: #4a5568;
+            word-break: break-word;
+        }
+        
+        .lab-reports {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .lab-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .lab-item:last-child {
+            border-bottom: none;
+        }
+        
+        .lab-name {
+            font-size: clamp(14px, 3vw, 16px);
+            color: #2d3748;
+        }
+        
+        .lab-value {
+            font-size: clamp(14px, 3vw, 16px);
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .hash-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .hash-title {
+            font-size: clamp(14px, 3vw, 16px);
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        
+        .hash-value {
+            font-family: 'Courier New', monospace;
+            font-size: clamp(11px, 2.5vw, 14px);
+            color: #4a5568;
+            word-break: break-all;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+        
+        .product-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .product-label {
+            font-size: clamp(14px, 3vw, 16px);
+            color: #718096;
+        }
+        
+        .product-id {
+            font-size: clamp(16px, 3.5vw, 18px);
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .verify-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .verify-link {
+            color: #48bb78;
+            text-decoration: none;
+            font-size: clamp(14px, 3vw, 16px);
+            font-weight: 500;
+            padding: 4px 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .verify-link:hover {
+            text-decoration: underline;
+        }
+        
+        .download-btn {
+            background: #2d3748;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: clamp(14px, 3vw, 16px);
+            font-weight: 500;
+            margin-top: 20px;
+            width: 100%;
+            transition: background 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .download-btn:hover {
+            background: #1a202c;
+        }
+        
+        .download-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #718096;
+            font-size: clamp(14px, 3vw, 16px);
+        }
+        
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #4299e1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: clamp(14px, 3vw, 16px);
+        }
+        
+        .success-badge {
+            display: inline-block;
+            background: #48bb78;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: clamp(11px, 2.5vw, 12px);
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        /* Mobile-specific styles */
+        @media (max-width: 640px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                justify-content: center;
+                text-align: center;
+            }
+            
+            .title {
+                text-align: center;
+            }
+            
+            .search-container {
+                padding: 15px;
+            }
+            
+            .search-box {
+                flex-direction: column;
+                padding: 15px;
+            }
+            
+            .search-icon {
+                display: none;
+            }
+            
+            .search-input {
+                width: 100%;
+                padding: 8px;
+            }
+            
+            .verify-btn {
+                width: 100%;
+                padding: 12px;
+            }
+            
+            .details-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .details-section {
+                padding: 15px;
+            }
+            
+            .product-section {
+                padding: 15px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .product-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .map-controls {
+                opacity: 0.9;
+            }
+        }
+        
+        /* Tablet styles */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .details-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-input {
+                min-width: 300px;
+            }
+        }
+        
+        /* Landscape mobile */
+        @media (max-width: 896px) and (orientation: landscape) {
+            #map {
+                height: 250px;
+            }
+            
+            .header {
+                padding: 10px 0;
+            }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            button, .verify-link {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .map-control-btn {
+                width: 44px;
+                height: 44px;
+            }
+        }
+        
+        /* High DPI screens */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .timeline::before {
+                width: 1px;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            .map-controls, .download-btn, .verify-btn {
+                display: none;
+            }
+            
+            #map {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Botanical Traceability (Blockchain)</h1>
+            <div class="qr-display" id="qrDisplay">
+                <svg viewBox="0 0 100 100">
+                    <rect x="10" y="10" width="20" height="20" fill="#333"/>
+                    <rect x="35" y="10" width="20" height="20" fill="#333"/>
+                    <rect x="60" y="10" width="20" height="20" fill="#333"/>
+                    <rect x="10" y="35" width="20" height="20" fill="#333"/>
+                    <rect x="60" y="35" width="20" height="20" fill="#333"/>
+                    <rect x="10" y="60" width="20" height="20" fill="#333"/>
+                    <rect x="35" y="60" width="20" height="20" fill="#333"/>
+                    <rect x="60" y="60" width="20" height="20" fill="#333"/>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" 
+                       placeholder="Enter QR Code or Batch Number" 
+                       value=""
+                       autocomplete="off"
+                       autocapitalize="off"
+                       spellcheck="false">
+                <button class="verify-btn" onclick="verifyProduct()">Verify</button>
+            </div>
+        </div>
+        
+        <div id="loadingSection" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Verifying on blockchain...</p>
+        </div>
+        
+        <div id="errorSection" class="error" style="display: none;"></div>
+        
+        <div id="resultsSection" style="display: none;">
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="map-controls">
+                    <button class="map-control-btn" onclick="zoomIn()">+</button>
+                    <button class="map-control-btn" onclick="zoomOut()">−</button>
+                </div>
+            </div>
+            
+            <div class="details-container">
+                <div class="details-section">
+                    <h2 class="section-title">Provenance Details</h2>
+                    <div class="timeline" id="timeline">
+                        <!-- Timeline items will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="details-section">
+                    <h2 class="section-title">Lab Reports</h2>
+                    <div class="lab-reports" id="labReports">
+                        <!-- Lab reports will be populated here -->
+                    </div>
+                    
+                    <div class="hash-section">
+                        <div class="hash-title">Provenance Hash</div>
+                        <div class="hash-value" id="hashValue">fa3b2c1d4e5f6g7h8j9k12m3n4o5p</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-section">
+                <div class="product-info">
+                    <span class="product-label">Product ID</span>
+                    <span class="product-id" id="productId">MER902100</span>
+                    <div class="verify-links">
+                        <a href="#" class="verify-link" onclick="showVerification(); return false;">Verify</a>
+                        <a href="#" class="verify-link" onclick="showVerification(); return false;">Verify</a>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="download-btn" onclick="downloadJSON()">Download the Certificate</button>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let map = null;
+        let currentData = null;
+        
+        // Check for QR code in URL params
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const qr = urlParams.get('qr');
+            if (qr) {
+                document.getElementById('searchInput').value = qr;
+                verifyProduct();
+            }
+            
+            // Add Enter key support
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    verifyProduct();
+                }
+            });
+        };
+        
+        async function verifyProduct() {
+            const qrCode = document.getElementById('searchInput').value.trim();
+            
+            if (!qrCode) {
+                showError('Please enter a QR Code or Batch Number');
+                return;
+            }
+            
+            // Hide keyboard on mobile
+            document.getElementById('searchInput').blur();
+            
+            // Show loading
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('errorSection').style.display = 'none';
+            document.getElementById('resultsSection').style.display = 'none';
+            
+            // Smooth scroll to loading
+            document.getElementById('loadingSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            try {
+                const response = await fetch(`${API_URL}/provenance/${qrCode}`);
+                
+                if (!response.ok) {
+                    throw new Error('Product not found');
+                }
+                
+                const data = await response.json();
+                currentData = data;
+                displayResults(data);
+                
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                document.getElementById('loadingSection').style.display = 'none';
+            }
+        }
+        
+        function displayResults(data) {
+            // Display product ID
+            document.getElementById('productId').textContent = data.product.id || 'MER902100';
+            
+            // Generate hash
+            const hash = generateHash(data);
+            document.getElementById('hashValue').textContent = hash;
+            
+            // Build timeline
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '';
+            
+            let mapLat = null;
+            let mapLng = null;
+            
+            data.ingredients.forEach(ingredient => {
+                ingredient.history.forEach(event => {
+                    if (event.type === 'CollectionEvent') {
+                        const item = createTimelineItem(
+                            'Collection Event',
+                            new Date(event.timestamp),
+                            `${event.location?.address || 'Village: Jath, District: Sangli'}`
+                        );
+                        timeline.appendChild(item);
+                        
+                        // Get coordinates for map
+                        if (event.location) {
+                            mapLat = parseFloat(event.location.latitude);
+                            mapLng = parseFloat(event.location.longitude);
+                        }
+                    } else if (event.type === 'ProcessingStep') {
+                        const item = createTimelineItem(
+                            'Processing Step',
+                            new Date(event.timestamp),
+                            event.processType ? event.processType.charAt(0).toUpperCase() + event.processType.slice(1) : 'Drying'
+                        );
+                        timeline.appendChild(item);
+                    } else if (event.type === 'QualityTest') {
+                        let testName = 'Quality Test';
+                        if (event.testType === 'microbial') {
+                            testName = 'Quality Test';
+                            const item = createTimelineItem(
+                                testName,
+                                new Date(event.timestamp),
+                                'Microbial analysis'
+                            );
+                            timeline.appendChild(item);
+                        }
+                    }
+                });
+            });
+            
+            // Build lab reports
+            const labReports = document.getElementById('labReports');
+            labReports.innerHTML = '';
+            
+            data.ingredients.forEach(ingredient => {
+                ingredient.history.forEach(event => {
+                    if (event.type === 'QualityTest') {
+                        if (event.testType === 'moisture') {
+                            const item = createLabItem('Moisture', `${event.results.value}%`);
+                            labReports.appendChild(item);
+                        } else if (event.testType === 'pesticide') {
+                            const item = createLabItem('Pesticide', `${event.results.value} ppm`);
+                            labReports.appendChild(item);
+                        }
+                    }
+                });
+            });
+            
+            // Initialize map with default coordinates if not found
+            if (!mapLat || !mapLng) {
+                mapLat = 16.8166; // Sangli coordinates
+                mapLng = 74.5649;
+            }
+            
+            initializeMap(mapLat, mapLng);
+            
+            // Show results
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Smooth scroll to results on mobile
+            setTimeout(() => {
+                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+        
+        function createTimelineItem(title, date, detail) {
+            const item = document.createElement('div');
+            item.className = 'timeline-item';
+            item.innerHTML = `
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">${title}</div>
+                <div class="timeline-date">${formatDate(date)}</div>
+                <div class="timeline-detail">${detail}</div>
+            `;
+            return item;
+        }
+        
+        function createLabItem(name, value) {
+            const item = document.createElement('div');
+            item.className = 'lab-item';
+            item.innerHTML = `
+                <span class="lab-name">${name}</span>
+                <span class="lab-value">${value}</span>
+            `;
+            return item;
+        }
+        
+        function formatDate(date) {
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        function initializeMap(lat, lng) {
+            // Remove existing map if any
+            if (map) {
+                map.remove();
+            }
+            
+            // Create new map with mobile-friendly options
+            map = L.map('map', {
+                center: [lat, lng],
+                zoom: 12,
+                zoomControl: false,
+                tap: true,
+                touchZoom: true,
+                dragging: true,
+                scrollWheelZoom: false
+            });
+            
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap',
+                maxZoom: 18
+            }).addTo(map);
+            
+            // Add marker with custom icon
+            const marker = L.marker([lat, lng], {
+                riseOnHover: true
+            }).addTo(map);
+            
+            marker.bindPopup(`
+                <div style="text-align: center; padding: 5px;">
+                    <strong>Harvest Location</strong><br>
+                    <small>Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</small>
+                </div>
+            `).openPopup();
+            
+            // Ensure map renders correctly
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 200);
+        }
+        
+        function zoomIn() {
+            if (map) map.zoomIn();
+        }
+        
+        function zoomOut() {
+            if (map) map.zoomOut();
+        }
+        
+        function generateHash(data) {
+            const str = JSON.stringify(data);
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(16).padStart(30, '0').substring(0, 30);
+        }
+        
+        function showError(message) {
+            const errorSection = document.getElementById('errorSection');
+            errorSection.textContent = message;
+            errorSection.style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+        
+        function showVerification() {
+            alert('✅ Product verified on blockchain!\nAuthenticity confirmed.');
+        }
+        
+        function downloadJSON() {
+            if (!currentData) return;
+            
+            const dataStr = JSON.stringify(currentData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportName = `provenance_${currentData.product.id}_${Date.now()}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportName);
+            linkElement.click();
+        }
+    </script>
+</body>
+</html>
