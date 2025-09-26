@@ -1,12 +1,13 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const QRCode = require('qrcode');
 const { Blockchain, SmartContracts } = require('./blockchain/blockchain');
 const db = require('./database/init');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;

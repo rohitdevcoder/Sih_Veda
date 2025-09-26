@@ -63,6 +63,114 @@
             height: 100%;
         }
         
+        .back-button {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
+            min-height: 44px;
+            min-width: 44px;
+            white-space: nowrap;
+            user-select: none;
+        }
+        
+        .back-button:hover {
+            background: #3182ce;
+            transform: translateY(-1px);
+        }
+        
+        .back-button:active {
+            transform: translateY(0);
+            background: #2c5282;
+        }
+        
+        .back-arrow {
+            font-size: 16px;
+            line-height: 1;
+            font-weight: bold;
+        }
+        
+        /* Mobile-specific styles for back button */
+        @media (max-width: 640px) {
+            .back-button {
+                padding: 10px 14px;
+                font-size: 13px;
+                gap: 6px;
+                min-height: 44px;
+                order: -1;
+                margin-bottom: 10px;
+                align-self: flex-start;
+            }
+            
+            .back-arrow {
+                font-size: 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .title {
+                order: 0;
+                text-align: center;
+                margin-bottom: 5px;
+            }
+            
+            .qr-display {
+                order: 1;
+                align-self: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .back-button {
+                padding: 8px 12px;
+                font-size: 12px;
+                gap: 5px;
+                min-height: 40px;
+            }
+            
+            .back-button span:nth-child(2) {
+                display: none;
+            }
+            
+            .back-button:after {
+                content: "Back";
+                font-size: 12px;
+            }
+        }
+        
+        /* Touch device optimizations for back button */
+        @media (hover: none) and (pointer: coarse) {
+            .back-button {
+                min-height: 48px;
+                min-width: 48px;
+                padding: 12px 16px;
+            }
+            
+            .back-button:hover {
+                transform: none;
+            }
+            
+            .back-button:active {
+                background: #2c5282;
+                transform: scale(0.98);
+            }
+        }
+        
         .search-container {
             background: white;
             border-radius: 12px;
@@ -531,6 +639,10 @@
 <body>
     <div class="container">
         <div class="header">
+            <button class="back-button" onclick="goBack()">
+                <span class="back-arrow">←</span>
+                <span>Back to Dashboard</span>
+            </button>
             <h1 class="title">Botanical Traceability (Blockchain)</h1>
             <div class="qr-display" id="qrDisplay">
                 <svg viewBox="0 0 100 100">
@@ -612,7 +724,7 @@
     </div>
     
     <script>
-        const API_URL = 'https://vedasqad-backend.onrender.com/api';
+        const API_URL = 'http://localhost:3000/api';
         let map = null;
         let currentData = null;
         
@@ -868,6 +980,16 @@
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportName);
             linkElement.click();
+        }
+        
+        function goBack() {
+            // Try to go back in browser history first
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                // If no history, redirect to index.html
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>
