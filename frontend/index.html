@@ -961,7 +961,7 @@
                 
                 <div class="form-group">
                     <label>Quantity (kg):</label>
-                    <input type="number" name="quantity" step="0.1" required>
+                    <input type="number" name="quantity" placeholder="Enter Quality" step="0.1" required>
                 </div>
                 
                 <div class="form-group">
@@ -1040,17 +1040,17 @@
                 <div class="form-group">
                     <label>Test Type:</label>
                     <select name="testType" required>
-                        <option value="moisture">Moisture Content</option>
-                        <option value="pesticide">Pesticide Residue</option>
+                        <!-- <option value="moisture">Moisture Content</option> -->
+                        <!-- <option value="pesticide">Pesticide Residue</option> -->
                         <option value="microbial">Microbial Testing</option>
-                        <option value="heavy-metals">Heavy Metals</option>
-                        <option value="dna">DNA Barcoding</option>
+                        <!-- <option value="heavy-metals">Heavy Metals</option> -->
+                        <!-- <option value="dna">DNA Barcoding</option> -->
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label>Test Value:</label>
-                    <input type="number" name="value" step="0.001" required>
+                    <input type="number" name="value" placeholder="Enter Test Value" step="0.001" required>
                 </div>
                 
                 <div class="form-group">
@@ -1060,7 +1060,7 @@
                 
                 <div class="form-group">
                     <label>Certificate Number:</label>
-                    <input type="text" name="certificate" required>
+                    <input type="text" name="certificate" placeholder="Enter Certificate Number" required>
                 </div>
                 
                 <div class="form-group">
@@ -1109,31 +1109,31 @@
                 <div class="form-group">
                     <label>Process Type:</label>
                     <select name="processType" required>
-                        <option value="drying">Drying</option>
-                        <option value="grinding">Grinding</option>
+                        <!-- <option value="drying">Drying</option> -->
+                        <!-- <option value="grinding">Grinding</option> -->
                         <option value="extraction">Extraction</option>
-                        <option value="packaging">Packaging</option>
+                        <!-- <option value="packaging">Packaging</option> -->
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label>Temperature (°C):</label>
-                    <input type="number" name="temperature" step="0.1">
+                    <input type="number" placeholder="Enter Temperature" name="temperature" step="0.1">
                 </div>
                 
                 <div class="form-group">
                     <label>Duration (hours):</label>
-                    <input type="number" name="duration" step="0.1">
+                    <input type="number" name="duration" placeholder="Enter Duration" step="0.1">
                 </div>
                 
                 <div class="form-group">
                     <label>Output Quantity (kg):</label>
-                    <input type="number" name="outputQuantity" step="0.1" required>
+                    <input type="number" name="outputQuantity" placeholder="Enter Output Quantity in kg" step="0.1" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Notes:</label>
-                    <textarea name="notes" rows="3"></textarea>
+                    <textarea name="notes" rows="3" placeholder="Enter Notes"></textarea>
                 </div>
                 
                 <button type="submit">
@@ -1178,12 +1178,12 @@
                 
                 <div class="form-group">
                     <label>Manufacturing Date:</label>
-                    <input type="date" name="manufacturingDate" required>
+                    <input type="date" name="manufacturingDate" placeholder="Choose Manufacturing Date" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Expiry Date:</label>
-                    <input type="date" name="expiryDate" required>
+                    <input type="date" name="expiryDate" placeholder="Choose Expiry Date" required>
                 </div>
                 
                 <button type="submit">
